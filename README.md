@@ -1,4 +1,6 @@
-EM4100 rfid tag reader for Arduino Uno.
+[![Build Status](https://travis-ci.org/makerspace/em4100_reader.svg?branch=master)](https://travis-ci.org/makerspace/em4100_reader)
+
+# EM4100 rfid tag reader for Arduino Uno.
 
 Connect receiver signal to pin 8 on your Arduino Uno.
 
