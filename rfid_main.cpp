@@ -4,10 +4,12 @@
 
 #include "em4100.h"
 #include <HardwareSerial.h>
+#include <string.h>
 
 em4100_reader::State state;
 uint8_t cardFacility;
 uint32_t cardUid;
+char card_number_str[9];
 
 void setup() {
     Serial.begin(115200);
@@ -18,6 +20,8 @@ void setup() {
 
     // Enable interrupts and start the state machine.
     em4100.startRfidCapture();
+
+    memset(card_number_str, 0, sizeof(card_number_str));
 }
 
 void loop() {
@@ -25,35 +29,27 @@ void loop() {
     state = em4100.getState();
 
     if (state == em4100_reader::ERROR_BUFFER_OVERFLOW) {
-        Serial.println("Buffer overflow!");
+        Serial.println("ERROR: Buffer overflow!");
         em4100.startRfidCapture();
     }
 
     if (state == em4100_reader::MANCHESTER_DONE || state == em4100_reader::BIPHASE_DONE) {
 
         if (state == em4100_reader::MANCHESTER_DONE) {
-            Serial.println("MANCHESTER_DONE!");
+            Serial.print("DECODED: MANCHESTER=");
         } else {
-            Serial.println("BIPHASE_DONE!");
+            Serial.print("DECODED: BIPHASE=");
         }
 
         if (em4100.parseData()) {
             cardFacility = em4100.getCardFacility();
             cardUid = em4100.getCardUid();
 
-            // Print tag data to serial
-            Serial.print("0x");
-            for (int8_t i = 4; i >= 0; i -= 4) {
-                uint8_t val = 0xF & (cardFacility >> i);
-                Serial.print(char(val < 0xA ? '0' + val : 'A' + val - 0xA));
-            }
-            for (int8_t i = 28; i >= 0; i -= 4) {
-                uint8_t val = 0xF & (cardUid >> i);
-                Serial.print(char(val < 0xA ? '0' + val : 'A' + val - 0xA));
-            }
-            Serial.println("!");
+            sprintf(card_number_str, "0x%02X%06lX", cardFacility, cardUid);
+            Serial.println(card_number_str);
 
         }
+
         // Restart capturing again.
         em4100.startRfidCapture();
     }
