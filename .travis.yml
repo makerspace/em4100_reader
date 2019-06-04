@@ -5,5 +5,5 @@ install:
   - sudo apt update
   - sudo apt install arduino arduino-mk
 script:
-  - make
+  - CFLAGS_STD=-std=gnu11 CXXFLAGS_STD=-std=gnu++11 make
 
