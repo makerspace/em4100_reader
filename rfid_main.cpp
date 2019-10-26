@@ -70,7 +70,7 @@ void loop() {
             cardFacility = em4100.getCardFacility();
             cardUid = em4100.getCardUid();
 
-            sprintf(card_number_str, "0x%02X%06lX", cardFacility, cardUid);
+            sprintf(card_number_str, "0x%02X%08lX", cardFacility, cardUid);
             Serial.println(card_number_str);
 
         }
